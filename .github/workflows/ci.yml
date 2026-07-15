@@ -1,0 +1,44 @@
+# Pipeline CI du backend FAV FIT.
+# Se déclenche à chaque push et pull request sur main et dev.
+# Règle d'équipe : le pipeline doit être VERT avant tout merge sur main.
+name: CI Backend
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['backend/**', '.github/workflows/ci.yml']
+  pull_request:
+    branches: [main, dev]
+    paths: ['backend/**', '.github/workflows/ci.yml']
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache-dependency-path: backend/go.sum
+
+      - name: Lint (analyse statique)
+        run: |
+          gofmt -l . | tee /tmp/gofmt.out
+          test ! -s /tmp/gofmt.out   # échoue si des fichiers sont mal formatés
+          go vet ./...
+
+      - name: Tests unitaires
+        run: go test ./... -v
+
+      - name: Build
+        run: go build ./...
+
+      - name: Build image Docker
+        run: docker build -t favfit-backend:ci .

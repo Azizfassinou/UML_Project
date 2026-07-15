@@ -24,3 +24,11 @@ func SendVerificationEmail(email, token string) error {
 	log.Printf("mailer: [DEV] email de validation pour %s -> %s", email, lien)
 	return nil
 }
+
+// SendSeanceAnnuleeEmail notifie un adhérent qu'une séance qu'il avait
+// réservée a été annulée (règle 4.4, extends "Notifier les adhérents").
+// Même logique dev que la validation : loggué en console.
+func SendSeanceAnnuleeEmail(email, intituleSeance string) error {
+	log.Printf("mailer: [DEV] notification pour %s -> votre séance %q a été annulée, votre place et votre quota ont été restitués", email, intituleSeance)
+	return nil
+}

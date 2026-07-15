@@ -53,17 +53,17 @@ func Setup(r *gin.Engine) {
 		// --- Abonnements ---
 		abonnements := api.Group("/abonnements")
 		{
-			abonnements.POST("", todo)                    // souscrire (paiement Stripe)
-			abonnements.PUT("/:id/resilier", todo)        // résilier
-			abonnements.PUT("/:id/changer-formule", todo) // changer de formule
+			abonnements.POST("", handlers.Souscrire)                         // souscrire (seq03, paiement Stripe)
+			abonnements.PUT("/:id/resilier", handlers.Resilier)              // résilier (règles engagement)
+			abonnements.PUT("/:id/changer-formule", handlers.ChangerFormule) // changer de formule
 		}
 
 		// --- Séances ---
 		seances := api.Group("/seances")
 		{
 			seances.GET("", handlers.ListeSeances) // liste avec filtres ?salle=&date=&coach=
-			seances.POST("", middleware.RequireRole("gestionnaire"), todo)
-			seances.DELETE("/:id", middleware.RequireRole("gestionnaire", "coach"), todo)
+			seances.POST("", middleware.RequireRole("gestionnaire"), handlers.CreerSeance)
+			seances.DELETE("/:id", middleware.RequireRole("gestionnaire", "coach"), handlers.AnnulerSeance) // seq07
 		}
 
 		// --- Réservations ---
@@ -71,16 +71,7 @@ func Setup(r *gin.Engine) {
 		{
 			reservations.POST("", handlers.Reserver)      // réserver (seq04)
 			reservations.DELETE("/:id", handlers.Annuler) // annuler (seq05, règle des 2h)
-			reservations.PUT("/:id/presence", middleware.RequireRole("coach"), todo)
+			reservations.PUT("/:id/presence", middleware.RequireRole("coach"), handlers.ValiderPresence)
 		}
 	}
-}
-
-// todo est un handler temporaire : il permet de démarrer le serveur
-// et de tester le middleware JWT avant d'avoir écrit les vrais handlers.
-func todo(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{
-		"error": "endpoint pas encore implémenté",
-		"route": c.FullPath(),
-	})
 }
