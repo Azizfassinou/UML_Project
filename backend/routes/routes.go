@@ -25,9 +25,9 @@ func Setup(r *gin.Engine) {
 	auth := r.Group("/auth")
 	{
 		auth.POST("/register", handlers.Register)        // inscription adhérent
-		auth.POST("/login", handlers.Login)               // connexion -> access + refresh token
-		auth.GET("/verify/:token", handlers.VerifyEmail)  // validation email
-		auth.POST("/refresh", handlers.Refresh)           // refresh token -> nouvelle paire
+		auth.POST("/login", handlers.Login)              // connexion -> access + refresh token
+		auth.GET("/verify/:token", handlers.VerifyEmail) // validation email
+		auth.POST("/refresh", handlers.Refresh)          // refresh token -> nouvelle paire
 	}
 
 	// Consultation des formules : publique (un visiteur non connecté
@@ -53,9 +53,9 @@ func Setup(r *gin.Engine) {
 		// --- Abonnements ---
 		abonnements := api.Group("/abonnements")
 		{
-			abonnements.POST("", todo)                     // souscrire (paiement Stripe)
-			abonnements.PUT("/:id/resilier", todo)         // résilier
-			abonnements.PUT("/:id/changer-formule", todo)  // changer de formule
+			abonnements.POST("", todo)                    // souscrire (paiement Stripe)
+			abonnements.PUT("/:id/resilier", todo)        // résilier
+			abonnements.PUT("/:id/changer-formule", todo) // changer de formule
 		}
 
 		// --- Séances ---
@@ -69,8 +69,8 @@ func Setup(r *gin.Engine) {
 		// --- Réservations ---
 		reservations := api.Group("/reservations")
 		{
-			reservations.POST("", todo)       // réserver (vérif abonnement + places)
-			reservations.DELETE("/:id", todo) // annuler (règle des 2h)
+			reservations.POST("", handlers.Reserver)      // réserver (seq04)
+			reservations.DELETE("/:id", handlers.Annuler) // annuler (seq05, règle des 2h)
 			reservations.PUT("/:id/presence", middleware.RequireRole("coach"), todo)
 		}
 	}
