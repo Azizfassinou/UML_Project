@@ -25,14 +25,14 @@ func Setup(r *gin.Engine) {
 	auth := r.Group("/auth")
 	{
 		auth.POST("/register", handlers.Register)        // inscription adhérent
-		auth.POST("/login", todo)                        // connexion -> access + refresh token
-		auth.GET("/verify/:token", handlers.VerifyEmail) // validation email
-		auth.POST("/refresh", todo)                      // refresh token -> nouvel access token
+		auth.POST("/login", handlers.Login)               // connexion -> access + refresh token
+		auth.GET("/verify/:token", handlers.VerifyEmail)  // validation email
+		auth.POST("/refresh", handlers.Refresh)           // refresh token -> nouvelle paire
 	}
 
 	// Consultation des formules : publique (un visiteur non connecté
 	// doit pouvoir voir les tarifs avant de s'inscrire).
-	r.GET("/formules", todo)
+	r.GET("/formules", handlers.ListeFormules)
 
 	// ------------------------------------------------------------------
 	// Routes PROTÉGÉES : JWT obligatoire.
