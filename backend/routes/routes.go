@@ -43,11 +43,11 @@ func Setup(r *gin.Engine) {
 		// --- Adhérents ---
 		adherents := api.Group("/adherents")
 		{
-			adherents.GET("/:id", todo)              // profil
-			adherents.PUT("/:id", todo)              // modifier profil
-			adherents.PUT("/:id/salle", todo)        // changer de salle principale
-			adherents.GET("/:id/reservations", todo) // historique réservations
-			adherents.GET("/:id/paiements", todo)    // historique paiements
+			adherents.GET("/:id", handlers.GetProfil)                           // profil + abonnement actif
+			adherents.PUT("/:id", handlers.UpdateProfil)                        // modifier profil
+			adherents.PUT("/:id/salle", handlers.ChangerSalle)                  // changer de salle (seq06)
+			adherents.GET("/:id/reservations", handlers.HistoriqueReservations) // historique réservations
+			adherents.GET("/:id/paiements", handlers.HistoriquePaiements)       // historique paiements
 		}
 
 		// --- Abonnements ---
@@ -61,7 +61,7 @@ func Setup(r *gin.Engine) {
 		// --- Séances ---
 		seances := api.Group("/seances")
 		{
-			seances.GET("", todo) // liste avec filtres ?salle=&date=&coach=
+			seances.GET("", handlers.ListeSeances) // liste avec filtres ?salle=&date=&coach=
 			seances.POST("", middleware.RequireRole("gestionnaire"), todo)
 			seances.DELETE("/:id", middleware.RequireRole("gestionnaire", "coach"), todo)
 		}
